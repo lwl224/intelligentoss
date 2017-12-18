@@ -1,7 +1,14 @@
+import os
 import unittest
 
 from tool import scrapy
 from tool import oss_data_treating
+
+
+import django
+if __name__ == "__main__":
+    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "intelligentoss.settings")
+    django.setup()
 
 
 # class Testscrapy(unittest.TestCase):
@@ -69,12 +76,14 @@ class Tests_oss_treating(unittest.TestCase):
     def test_init(self):
         pass
 
-
     # def test_get_original_data(self):
-    #     self.assertTrue(oss_data_treating.Scrapy_data_acquisition().get_original_data())
+    #     self.assertTrue(oss_data_treating.ScrapyDataAcquisition().get_original_data())
+
+    # def test_delete_original_data(self):
+    #     self.assertTrue(oss_data_treating.ScrapyDataAcquisition().delete_original_data())
 
     def test_delete_original_data(self):
-        self.assertTrue(oss_data_treating.Scrapy_data_acquisition().delete_original_data())
+        self.assertTrue(oss_data_treating.Databases_dataSave().original_data_save())
 
 
 if __name__ == '__main__':

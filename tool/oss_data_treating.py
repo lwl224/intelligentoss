@@ -4,14 +4,19 @@ __author__ = 'lwl224'
 __mtime__ = '2017/12/9'
 """
 import sys
-
+import os
 import xlrd
 from gevent import monkey
 import gevent
 import time
-from tool.scrapy import oss_ask, Abstract_ask
-import os
+from tool.scrapy import oss_ask, AbstractAsk
 import shutil
+
+import django
+
+if __name__ == "__main__":
+    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "intelligentoss.settings")
+    django.setup()
 
 monkey.patch_socket()
 
@@ -20,10 +25,7 @@ sys.setdefaultencoding('utf8')
 start = time.clock()
 
 
-
-
-
-class Abstract_data_acquisition:
+class AbstractDataAcquisition:
     def __init__(self):
         pass
 
@@ -34,7 +36,7 @@ class Abstract_data_acquisition:
         raise NotImplementedError
 
 
-class Abstract_data_save:
+class AbstractDataSave:
     def __init__(self):
         pass
 
@@ -45,24 +47,23 @@ class Abstract_data_save:
         raise NotImplementedError
 
 
-class Databases_data_save(Abstract_data_save):
-
+class Databases_dataSave(AbstractDataSave):
     def original_data_save(self):
 
-        save_data_lsit = [(self.save2databases, 'Bbu', 'tilt/data/bbu.xlsx', [6, 7]),
-                          (self.save2databases, 'Ltecell', 'tilt/data/cell.xlsx', [14, 15]),
-                          (self.save2databases, 'Antenna', 'tilt/data/antenna.xlsx', [5, 6, 10, 11]),
-                          (self.save2databases, 'Cell2scenes', 'tilt/data/cell2scenes.xlsx', [0]),
-                          (self.save2databases, 'Scenes', 'tilt/data/scenes.xlsx', [8, 9, 14, 15]),
-                          (self.save2databases, 'Enodeb', 'tilt/data/enodeb.xlsx', [34, 35]),
-                          (self.save2databases, 'Ltecell', 'tilt/data/cell.xlsx', [14, 15]), ]
+        save_data_lsit = [(self.save2databases, 'Bbu', 'data/bbu.xlsx', [6, 7]),
+                          (self.save2databases, 'Ltecell', 'data/cell.xlsx', [14, 15]),
+                          (self.save2databases, 'Antenna', 'data/antenna.xlsx', [5, 6, 10, 11]),
+                          (self.save2databases, 'Cell2scenes', 'data/cell2scenes.xlsx', [0]),
+                          (self.save2databases, 'Scenes', 'data/scenes.xlsx', [8, 9, 14, 15]),
+                          (self.save2databases, 'Enodeb', 'data/enodeb.xlsx', [34, 35]),
+                          (self.save2databases, 'Rru', 'data/rru.xlsx', [5, 6]),
+                          (self.save2databases, 'Physicalstation', 'data/physicalstation.xlsx', [6, 7]), ]
         try:
             for save_data_example in save_data_lsit:
                 apply(gevent.spawn, save_data_example).join()
             return True
         except:
             raise LookupError
-
 
     def delete_savedata(self):
         pass
@@ -71,13 +72,19 @@ class Databases_data_save(Abstract_data_save):
     def save2databases(class_name='Ltecell', file_name='cell.xlsx', check_rows=None):
         if check_rows is None:
             check_rows = [14, 15]
-        load_models = sys.modules['books.models']  # 得到这个模块
+        save_data_class = None
+        load_models = sys.modules['smart_import.models']  # 得到这个模块
         class_list = dir(load_models)  # 得到属性的列表
         for test_class in class_list:  # 迭代之
             if test_class == class_name:
                 save_data_class = getattr(load_models, test_class)
-        with xlrd.open_workbook(file_name) as data:
-            print u"读取文件结束,开始导入!"
+                if save_data_class:
+                    save_data_class.objects.all().delete()
+                break
+
+        abspath = os.path.abspath('.')
+        with xlrd.open_workbook('./' + file_name) as data:
+            print class_name + u"读取文件结束,开始导入!"
             table = data.sheet_by_index(0)  # 获取工作表
             rows_count = 1
             zero_numb = 0
@@ -85,21 +92,29 @@ class Databases_data_save(Abstract_data_save):
             for line in range(rows_count, table.nrows):  # 行数 nrows = table.nrows
                 row = table.row_values(line)  # 列数 table.row_values(rownum)
                 if row:  # 查看行值是否为空
-                    # row = foreachadd(list1, row)
+                    row = Databases_dataSave.foreachadd(check_rows, row)
                     sql_save_list.append(save_data_class().init1(row))
                 else:
                     zero_numb = zero_numb + 1  # 空行值计数
                 rows_count = rows_count + 1
-                if rows_count % 99 == 0:
+                if rows_count % 999 == 0:
                     save_data_class.objects.bulk_create(sql_save_list)
                     sql_save_list = []
+
             print rows_count
             save_data_class.objects.bulk_create(sql_save_list)
 
+    @classmethod
+    def foreachadd(cls, list1, row):
+        for nn in list1:
+            if str(row[nn]).strip() == '':
+                row[nn] = 0.0
+        return row
 
-class Scrapy_data_acquisition(Abstract_data_acquisition):
+
+class ScrapyDataAcquisition(AbstractDataAcquisition):
     def __init__(self):
-        Abstract_data_acquisition.__init__(self)
+        AbstractDataAcquisition.__init__(self)
 
     url_cell = "http://10.245.0.91:10101/wonop/wonop/config/maintain/query/config_maintain_query_L00805_dataList.action"
     para_dict_cell = {
@@ -271,7 +286,7 @@ class Scrapy_data_acquisition(Abstract_data_acquisition):
 
     def scrapy_data(self):
         """爬取沃网络数据"""
-        Abstract_ask.get_new_cookie()
+        AbstractAsk.get_new_cookie()
         ask_lsit = [(oss_ask, self.url_rru, self.para_dict_rru, '%s/rru' % self.datestr),
                     (oss_ask, self.url_cell, self.para_dict_cell, '%s/cell' % self.datestr),
                     (oss_ask, self.url_enodeb, self.para_dict_enodeb, '%s/enodeb' % self.datestr),
@@ -302,9 +317,12 @@ class Scrapy_data_acquisition(Abstract_data_acquisition):
         return True
 
 
-class Database_data_acquisition(Abstract_data_acquisition):
+class DatabaseDataAcquisition(AbstractDataAcquisition):
     def get_original_data(self):
         pass
 
     def delete_original_data(self):
         pass
+
+
+# Databases_dataSave().original_data_save()

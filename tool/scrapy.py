@@ -15,12 +15,12 @@ reload(sys)
 sys.setdefaultencoding('utf8')
 
 
-class Abstract_ask():
+class AbstractAsk():
     """oss操作抽象工厂类"""
 
 
     def __init__(self):
-        Abstract_ask.get_new_cookie()
+        AbstractAsk.get_new_cookie()
         pass
 
     @classmethod
@@ -33,7 +33,7 @@ class Abstract_ask():
         opener = urllib2.build_opener(handler)
         opener.addheaders = [("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:52.0) Gecko/20100101 Firefox/52.0")]
         urllib2.install_opener(opener)
-        Abstract_ask.oss_loading_get_data(username_password, oss_login_url)
+        AbstractAsk.oss_loading_get_data(username_password, oss_login_url)
         cookie.save('cookie.txt', ignore_discard=True, ignore_expires=True)
         return True
 
@@ -99,58 +99,58 @@ class Abstract_ask():
         pass
 
 
-class Ask_save_excel(Abstract_ask):
+class AskSaveExcel(AbstractAsk):
     """获取表格数据具体操作类"""
 
     def __init__(self):
-        Abstract_ask.__init__(self)
+        AbstractAsk.__init__(self)
 
     @classmethod
     def ask(cls, url, para_dict, file_path):
-        Ask_save_excel.make_time_flag(para_dict)
-        oss_res = Ask_save_excel.oss_loading_get_data(para_dict, url)
-        Ask_save_excel.save_excel_file(file_path, oss_res)
+        AskSaveExcel.make_time_flag(para_dict)
+        oss_res = AskSaveExcel.oss_loading_get_data(para_dict, url)
+        AskSaveExcel.save_excel_file(file_path, oss_res)
         return True
 
 
-class Ask_modify(Abstract_ask):
+class AskModify(AbstractAsk):
     """更改oss对象具体操作类"""
 
     def __init__(self):
-        Abstract_ask.__init__(self)
+        AbstractAsk.__init__(self)
 
     @classmethod
     def ask(cls, url, para_dict, file_path):
-        Ask_modify.make_time_flag(para_dict, 'modify')
-        oss_res = Ask_modify.oss_loading_get_data(para_dict, url)
+        AskModify.make_time_flag(para_dict, 'modify')
+        oss_res = AskModify.oss_loading_get_data(para_dict, url)
         res_msg = oss_res.read()
         res1 = res_msg.replace('\\', ' ').replace('\':', ' ').replace(',', ' ').split()
         return res1[1]
 
 
-class Ask_delete(Abstract_ask):
+class AskDelete(AbstractAsk):
     """删除oss对象具体操作类"""
 
     def __init__(self):
-        Abstract_ask.__init__(self)
+        AbstractAsk.__init__(self)
 
     @classmethod
     def ask(cls, url, para_dict, file_path):
-        Ask_modify.make_time_flag(para_dict)
-        oss_res = Ask_modify.oss_loading_get_data(para_dict, url)
+        AskModify.make_time_flag(para_dict)
+        oss_res = AskModify.oss_loading_get_data(para_dict, url)
         res_msg = oss_res.read()
         res1 = res_msg.replace('\\', ' ').replace('\':', ' ').replace(',', ' ').split()
         return res1[1]
 
 
-def oss_ask(url, para_dict, file_path, asktyps=Ask_save_excel):
+def oss_ask(url, para_dict, file_path, asktyps=AskSaveExcel):
     """
     依照传入url进行请求
     :type para_dict: object
     :type url: str
     :type para_dict: object
     :type file_path: str
-    :type asktyps: Abstract_ask
+    :type asktyps: AbstractAsk
     """
     try:
         asktyps.ask(url, para_dict, file_path)

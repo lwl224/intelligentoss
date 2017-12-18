@@ -16,6 +16,18 @@ Including another URLconf
 from django.conf.urls import url
 from django.contrib import admin
 
+from smart_import import views
+
 urlpatterns = [
+    url(r'^$', views.index, name='homepage'),
     url(r'^admin/', admin.site.urls),
+    url(r'^signup/$', views.signup, name='signup'),
+    url(r'^login/$', views.login, name='login'),
+    url(r'^logout/$', views.logout, name='logout'),
+    url(r'^set_password/$', views.set_password, name='set_password'),
+    url(r'^view_cell/$', views.view_cell, name='view_cell'),
+    url(r'^loaddata/$', views.initialization, name='init'),
+    url(r'^downdata/$', views.download, name='load'),
+    url(r'^upexcel/$', views.upexcel, name='upexcel'),
+    url(r'^addcellunion/(.*)/$', views.addcellunion, name='add'),
 ]
