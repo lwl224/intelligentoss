@@ -7,3 +7,7 @@ import sys
 
 reload(sys)
 sys.setdefaultencoding('utf8')
+
+def application(env, start_response):
+    start_response('200 OK', [('Content-Type','text/html')])
+    return ["Hello World"] # python2
