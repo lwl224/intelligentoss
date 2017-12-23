@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 import xlrd
 from django import forms
 from django.http import HttpResponse, HttpResponseRedirect
+from django.http import StreamingHttpResponse
 from django.shortcuts import render, render_to_response
 from django.core.urlresolvers import reverse
 from django.contrib import auth
@@ -218,3 +219,25 @@ def addcellunion(request, salt):
         return render_to_response('management/importresult.html', content)
     else:
         return HttpResponse(u'完成失败')
+
+
+def big_file_download(request):
+    # do something...
+
+    def file_iterator(file_name, chunk_size=512):
+        with open('./tool/data/'+file_name) as f:
+            while True:
+                c = f.read(chunk_size)
+                if c:
+                    yield c
+                else:
+                    break
+
+    the_file_name = u"cell模板.xlsx"
+    response = StreamingHttpResponse(file_iterator(the_file_name))
+    response['Content-Type'] = 'application/octet-stream'
+    response['Content-Disposition'] = 'attachment;filename="{0}"'.format(the_file_name)
+
+    return response
+
+
