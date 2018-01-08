@@ -4,124 +4,102 @@
 
 {% block content %}
 
-    {#         <div class="container">#}
-    {#            <div class="row">#}
-    {#                <div class="col-md-6 col-md-offset-3 col-sm-10 col-sm-offset-1">#}
-    {#            <body>#}
-    {#            <h1>上传excel</h1>#}
-    {#            <form method="post" enctype="multipart/form-data">#}
-    {#                {{ uf.as_p }}#}
-    {#                <input type="submit" value="ok"/>#}
-    {#                <input id="excelFile" type="file" class="file-loading">#}
-    {#            </form>#}
-    {#            </body>#}
-    {#                               </div>#}
-    {#                </div>#}
-    {#            </div>#}
-    {#    <body>#}
 
-    <!--导入数据操作层-->
 
     <div class="container">
         <div class="row">
             <div class="col-md-6 col-md-offset-3 col-sm-1 ">
+                <form action="/upexcel/" method="post" enctype="multipart/form-data">
+                    <div title="Excel导入操作" style="padding: 5px" data-options="iconCls:'icon-key'">
+                        {{ excelfile.excelfile }}
+                        <input type="submit" class="btn btn-primary" id="btnUpload" value="上传">
+                        <a href="javascript:;" class="btn btn-default" id="btnCancelUpload"
+                           onclick="javascript: $('#file_upload').uploadify('cancel', '*')">取消</a>
+                        <a href="/downmodeexcel/" class="btn btn-default" id="btloadcell">下载小区模板</a>
 
-                {#                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>#}
-                {#                <h4 class="modal-title">文件导入</h4>#}
-
-{#                <div class="modal-body">#}
-{#                    <div>#}
-{#                        <a href="~/books/cell-模板.xls" onclick="javascript:Preview();">#}
-                            {#                            <img alt="增加小区-模板" src="~/Content/images/ico_excel.png"/>#}
-{#                            <span style="font-size:larger;font-weight:200;color:red">cell-模板.xls</span>#}
-{#                        </a>#}
-{##}
-{#                    </div>#}
-                    {#                    <form action="/upexcel/" id="ffImport" method="post" enctype="multipart/form-data">#}
-                    <form action="/upexcel/" method="post" enctype="multipart/form-data">
-                        <div title="Excel导入操作" style="padding: 5px" data-options="iconCls:'icon-key'">
-                            {{ uf.as_p }}
-                            <input type="submit" class="btn btn-primary" id="btnUpload" value="上传">
-                            <a href="javascript:;" class="btn btn-default" id="btnCancelUpload"
-                               onclick="javascript: $('#file_upload').uploadify('cancel', '*')">取消</a>
-                            <a href="~/books/cell-模板.xls" class="btn btn-default" id="btloadcell"
-                               onclick="javascript: $('#file_upload').uploadify('cancel', '*')">下载小区模板</a>
-
-                            <div id="fileQueue" class="fileQueue"></div>
-                            <hr style="width:98%"/>
-                            <div id="div_files"></div>
-                        </div>
-                    </form>
-                </div>
+                        <div id="fileQueue" class="fileQueue"></div>
+                        <hr style="width:98%"/>
+                        <div id="div_files"></div>
+                    </div>
+                </form>
             </div>
         </div>
-        <!--数据显示表格-->
-        <div class="row">
-            <div class="col-md-9 col-md-offset-1 col-sm-5 ">
-                <table id="gridImport" class="table table-striped table-bordered table-hover" cellpadding="0"
-                       cellspacing="0" border="0" class="display" width="100%">
-                    <thead id="gridImport_head">
-                    <tr>
-                        <th class="table-checkbox" style="width:40px"><input class="group-checkable" type="checkbox"
-                                                                             onclick="selectAll(this)"></th>
-                        <th>数目编号</th>
-                        <th>地市</th>
-                        <th>小区网管名</th>
-                        <th>cellid</th>
-                        <th>RRU网管名称</th>
-                        <th>RRU采集ID</th>
-                        <th>挂高</th>
-                        <th>方向角</th>
-                        <th>物理站编号</th>
-                        <th>场景编号</th>
-                        <th>核查完成情况</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {% for cell in cell_list %}
-                        <tr>
-                            <td class="text-center"><input type="checkbox" class="checked_pro" name="checkbox1"/>
-                            </td>
-                            <td>{{ forloop.counter }}</td>
-                            <td>{{ cell.cell.city }}</td>
-                            <td>{{ cell.cell.cellomcname }}</td>
-                            <td>{{ cell.cell.cellid1 }}</td>
-                            <td>{{ cell.rru.rruname }}</td>
-                            <td>{{ cell.rru.rruid }}</td>
-                            <td>{{ cell.ant.antennaheight }}</td>
-                            <td>{{ cell.ant.directionangle }}</td>
-                            <td>{{ cell.rru.physicalstationid }}</td>
-                            <td>{{ cell.scenes.scenesid }}</td>
+    </div>
+    <!--数据显示表格-->
+    <div class="row">
+        <div class="col-md-9 col-md-offset-1 col-sm-5 ">
+            <table id="gridImport" class="table table-striped table-bordered table-hover" cellpadding="0"
+                   cellspacing="0" border="0" class="display" width="100%">
+                <thead id="gridImport_head">
+                <tr>
+                    <th class="table-checkbox" style="width:40px"><input class="group-checkable" type="checkbox"
+                                                                         onclick="selectAll(this)"></th>
+                    <th>数目编号</th>
+                    <th>地市</th>
+                    <th>小区网管名</th>
+                    <th>cellid</th>
+                    <th>RRU网管名称</th>
+                    <th>RRU采集ID</th>
+                    <th>挂高</th>
+                    <th>方向角</th>
+                    <th>物理站编号</th>
+                    <th>场景编号</th>
+                    <th>核查完成情况</th>
+                </tr>
+                </thead>
+                <tbody>
+                                {% for cell in cell_list %}
+                                    <tr>
+                                        <td class="text-center"><input type="checkbox" class="checked_pro" name="checkbox1"/>
+                                        </td>
+                                        <td>{{ forloop.counter }}</td>
+                                        <td>{{ cell.cell.city }}</td>
+                                        <td>{{ cell.cell.cellomcname }}</td>
+                                        <td>{{ cell.cell.cellid1 }}</td>
+                                        <td>{{ cell.rru.rruname }}</td>
+                                        <td>{{ cell.rru.rruid }}</td>
+                                        <td>{{ cell.ant.antennaheight }}</td>
+                                        <td>{{ cell.ant.directionangle }}</td>
+                                        <td>{{ cell.rru.physicalstationid }}</td>
+                                        <td>{{ cell.scenes.scenesid }}</td>
+                                        <td>{{ cell.check_is }}</td>
+                                    </tr>
+                                {% endfor %}
 
-                            {#                                <td>{{ cell.price|floatformat:2 }}</td>#}
-                        </tr>
-                    {% empty %}
 
-                    {% endfor %}
-                    </tbody>
-                    <nav>
-                        <ul class="pager">
-                            {% if cell_list.has_previous %}
-                                <li class="previous"><a
-                                        href="?typ={{ query_category }}&page={{ cell_list.previous_page_number }}">上一页</a>
-                                </li>
-                            {% else %}
-                                <li class="previous disabled"><a href="#">上一页</a></li>
-                            {% endif %}
-                            第 {{ cell_list.number }} / {{ cell_list.paginator.num_pages }}页
-                            {% if cell_list.has_next %}
-                                <li class="next"><a
-                                        href="?typ={{ query_category }}&page={{ cell_list.next_page_number }}">下一页</a>
-                                </li>
-                            {% else %}
-                                <li class="next disabled"><a href="#">下一页</a></li>
-                            {% endif %}
-                        </ul>
-                    </nav>
-                    <tbody id="gridImport_body"></tbody>
-                </table>
-            </div>
+
+                </tbody>
+                <nav>
+                    <ul class="pager">
+                        {% if cell_list.has_previous %}
+                            <li class="previous"><a
+                                    href="?typ={{ query_category }}&page={{ cell_list.previous_page_number }}">上一页</a>
+                            </li>
+                        {% else %}
+                            <li class="previous disabled"><a href="#">上一页</a></li>
+                        {% endif %}
+                        第 {{ cell_list.number }} / {{ cell_list.paginator.num_pages }}页
+                        {% if cell_list.has_next %}
+                            <li class="next"><a
+                                    href="?typ={{ query_category }}&page={{ cell_list.next_page_number }}">下一页</a>
+                            </li>
+                        {% else %}
+                            <li class="next disabled"><a href="#">下一页</a></li>
+                        {% endif %}
+                    </ul>
+                </nav>
+                <tbody id="gridImport_body"></tbody>
+
+            </table>
+            {#            {% if from_list.errors %}#}
+            {#                <p style="color: red;">#}
+            {#                    Please correct the error{{ from_list.errors|pluralize }} below.#}
+            {#                </p>#}
+            {#            {% endif %}#}
+
+
         </div>
+    </div>
 
 
     </div>
@@ -130,9 +108,17 @@
         <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
         {% if filtname %}
             {#            {{ filtname }}#}
+            {% if check_flag %}
             <a class="btn btn-primary" href=/addcellunion/{{ filtname }} %}">导入数据</a>
+            {% endif %}
+            {% if not check_flag %}
+            <li>数据核查不通过，请修正后重新上传</li>
+            {% endif %}
 
         {% endif %}
+
+
+
     </div>
 
 
