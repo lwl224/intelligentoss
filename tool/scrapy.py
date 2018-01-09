@@ -18,7 +18,6 @@ sys.setdefaultencoding('utf8')
 class AbstractAsk():
     """oss操作抽象工厂类"""
 
-
     def __init__(self):
         AbstractAsk.get_new_cookie()
         pass
@@ -153,6 +152,10 @@ def oss_ask(url, para_dict, file_path, asktyps=AskSaveExcel):
     :type asktyps: AbstractAsk
     """
     try:
-        asktyps.ask(url, para_dict, file_path)
+        respond_msg = asktyps.ask(url, para_dict, file_path)
+        if respond_msg == 'false':
+            raise ValueError('input error!')
+        elif respond_msg == 'true':
+            return respond_msg
     except:
-        pass
+        raise ValueError('input error!')
