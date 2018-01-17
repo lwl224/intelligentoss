@@ -15,7 +15,6 @@ Including another URLconf
 """
 from django.conf.urls import url
 from django.contrib import admin
-
 from smart_import import views
 
 urlpatterns = [
@@ -29,5 +28,6 @@ urlpatterns = [
     url(r'^loaddata/$', views.initialization, name='init'),
     url(r'^downdata/$', views.download, name='load'),
     url(r'^upexcel/$', views.upexcel, name='upexcel'),
+    url(r'^downmodeexcel/$', views.big_file_download, name='downmodeexcel'),
     url(r'^addcellunion/(.*)/$', views.addcellunion, name='add'),
 ]

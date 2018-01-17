@@ -49,7 +49,7 @@ class AbstractDataSave:
 
 class Databases_dataSave(AbstractDataSave):
     def original_data_save(self):
-
+        all_flag = True
         save_data_lsit = [(self.save2databases, 'Bbu', 'data/bbu.xlsx', [6, 7]),
                           (self.save2databases, 'Ltecell', 'data/cell.xlsx', [14, 15]),
                           (self.save2databases, 'Antenna', 'data/antenna.xlsx', [5, 6, 10, 11]),
@@ -60,13 +60,17 @@ class Databases_dataSave(AbstractDataSave):
                           (self.save2databases, 'Physicalstation', 'data/physicalstation.xlsx', [6, 7]), ]
         try:
             for save_data_example in save_data_lsit:
-                apply(gevent.spawn, save_data_example).join()
-            return True
+                gevent_save = apply(gevent.spawn, save_data_example)
+                gevent_save.join()
+                all_flag = all_flag & gevent_save.successful()
+            return all_flag
         except:
             raise LookupError
 
+
     def delete_savedata(self):
         pass
+
 
     @staticmethod
     def save2databases(class_name='Ltecell', file_name='cell.xlsx', check_rows=None):
@@ -103,6 +107,7 @@ class Databases_dataSave(AbstractDataSave):
 
             print rows_count
             save_data_class.objects.bulk_create(sql_save_list)
+
 
     @classmethod
     def foreachadd(cls, list1, row):
@@ -323,6 +328,5 @@ class DatabaseDataAcquisition(AbstractDataAcquisition):
 
     def delete_original_data(self):
         pass
-
 
 # Databases_dataSave().original_data_save()

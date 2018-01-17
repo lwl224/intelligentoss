@@ -24,7 +24,7 @@ SECRET_KEY = 'ko8d#=ateo186hnpff8&g6%bl%ve6=+s-l(9g_^4k^4@&lp(jk'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['120.79.0.35', 'localhost', '127.0.0.1']
 
 # Application definition
 
@@ -81,8 +81,11 @@ DATABASES = {
         'NAME': 'lwl224',
         'USER': 'root',
         'PASSWORD': '123456',
-        'HOST': '10.160.54.209',
-        'PORT': '3306',
+        # 'HOST': 'mysql',
+        # 'HOST': '10.160.54.209',
+        'HOST': '120.79.0.35',
+        'PORT': '3307',
+        # 'PORT': '3306',
     }
 }
 

@@ -79,6 +79,15 @@ CELL_ACTIVE_STATElist = {"激活": "1",
 HIGH_SPEED_FLAGlist = {"高速小区": "1",
                        "低速小区": "2",
                        }
+TX_RX_MODElist = {
+    "1T1R(一发一收)": "1",
+    "1T2R(一发二收)": "2",
+    "2T2R(两发两收)": "3",
+    "2T4R(两发四收)": "4",
+    "4T4R(四发四收)": "5",
+    "8T8R(八发八收)": "6",
+}
+
 CSFBlist = {"GSM": "1",
             "WCDMA": "2",
             }
@@ -92,15 +101,6 @@ VENDOR_Idlsit = {"华为": "1",
                  "中兴": "2",
                  "诺基亚": "5",
                  }
-TX_RX_MODElist = {
-    "1T1R(一发一收)": "1",
-    "1T2R(一发二收)": "2",
-    "2T2R(两发两收)": "3",
-    "2T4R(两发四收)": "4",
-    "4T4R(四发四收)": "5",
-    "8T8R(八发八收)": "6",
-
-}
 RRU_MODELlist = {"RRU": "1",
                  "载频板": "2",
                  }
@@ -109,10 +109,31 @@ RRU_MODELlist = {"RRU": "1",
 class MyUser(models.Model):
     user = models.OneToOneField(User)
     nickname = models.CharField(max_length=16)
+    region = models.CharField(max_length=36)
+    department = models.CharField(max_length=36)
     permission = models.IntegerField(default=1)
 
 
-class Antenna(models.Model):
+class BasisOss(models.Model):
+    add_data_information = None
+    basic_information = None
+    modify_url = 'http://10.245.0.91:10101/wonop/wonop/config/maintain/detail/config_maintain_property_add_nocheckEx.action'
+    def makeToOss(self):
+        try:
+            AbstractAsk.get_new_cookie()
+
+            respond_msg = oss_ask(self.modify_url, self.add_data_information, None, AskModify)
+            if respond_msg == 'true':
+                # self.save()
+                pass
+        except:
+            raise ValueError('input error!')
+
+    def delete_data_oss(self):
+        pass
+
+
+class Antenna(BasisOss):
     antennaid = models.CharField(max_length=512)
     antennaid1 = models.CharField(max_length=512)
     province = models.CharField(max_length=512)
@@ -181,7 +202,57 @@ class Antenna(models.Model):
         return self
 
     def makeDataToOss(self):
-        para_dict = {
+        # para_dict = {
+        #     'timestamp': '1512009575000',
+        #     'objectTypeId': 'L00863',
+        #     'objectId': 'null',
+        #     'complaintId': 'null',
+        #     'cell_4g': '',
+        #     'cell_3g': '',
+        #     'cell_2g': '',
+        #     'test': '',
+        #     'ANT_ID': self.antennaid,
+        #     'NMS_ORIG_RES_NAME': self.antennaid1,
+        #     'PROVINCE_ID': '110',
+        #     'CITY_ID': CITYID[self.city],
+        #     'DISTRICT_ID': DISTRICT_ID[self.district],
+        #     'LONGITUDE': self.lon,
+        #     'LATITUDE': self.lat,
+        #     'PHY_ID': self.physicalstationid,
+        #     'RELATED_RRU': self.rruid,
+        #     'RELATED_CELL': self.cellid1,
+        #     'ANT_AZIMUTH': self.directionangle,
+        #     'ANT_HIGH': self.antennaheight,
+        #     'ANT_ELECTANGLE': self.electricaldowntilt,
+        #     'ANT_MACHANGLE': self.mechanicaltilt,
+        #     'ANT_TYPE': '2',
+        #     'BEA_TYPE': '2',
+        #     'ANT_EQUIP': self.antennafactory,
+        #     'ANT_EQUIPMODULE': self.antennamodel,
+        #     'PORT_NUM': self.antennanum,
+        #     'LEVEL_POWER': self.horizontalpowerangle,
+        #     'APEAK_POWER': self.verticalpowerangle,
+        #     'ANT_GAIN': self.antennagain,
+        #     'ATTACH_ENT': self.picture1,
+        #     'ATTACH_COV': self.picture2,
+        #     'ATTACH_PHY': self.picture3,
+        #     'ATTACH_QUE': self.picture4,
+        #     'TOWER_TYPE': '3',
+        #     'TX_RX_MODE': TX_RX_MODElist[self.txrxmod],
+        #     'VERTICAL_DIST': self.verticalrange,
+        #     'PHY_TYPE': '',
+        #
+        # }
+        # try:
+        #     AbstractAsk.get_new_cookie()
+        #     modify_url = 'http://10.245.0.91:10101/wonop/wonop/config/maintain/detail/config_maintain_property_add_nocheckEx.action'
+        #     respond_msg = oss_ask(modify_url, para_dict, None, AskModify)
+        #     if respond_msg == 'true':
+        #         self.save()
+        # except:
+        #     raise ValueError('input error!')
+
+        self.add_data_information = {
             'timestamp': '1512009575000',
             'objectTypeId': 'L00863',
             'objectId': 'null',
@@ -222,17 +293,10 @@ class Antenna(models.Model):
             'PHY_TYPE': '',
 
         }
-        try:
-            AbstractAsk.get_new_cookie()
-            modify_url = 'http://10.245.0.91:10101/wonop/wonop/config/maintain/detail/config_maintain_property_modify_nocheck.action'
-            respond_msg = oss_ask(modify_url, para_dict, None, AskModify)
-            if respond_msg == 'true':
-                self.save()
-        except:
-            raise ValueError('input error!')
+        self.makeToOss()
 
 
-class Cell2scenes(models.Model):
+class Cell2scenes(BasisOss):
     province = models.CharField(max_length=512)
     city = models.CharField(max_length=512)
     scenesid = models.CharField(max_length=512)
@@ -252,8 +316,29 @@ class Cell2scenes(models.Model):
         return self
 
     def makeDataToOss(self):
-        modify_url = 'http://10.245.0.91:10101/wonop/wonop/config/maintain/detail/config_maintain_property_add_nocheckEx.action'
-        para_dict = {
+        # modify_url = 'http://10.245.0.91:10101/wonop/wonop/config/maintain/detail/config_maintain_property_add_nocheckEx.action'
+        # para_dict = {
+        #     'timestamp': '1512011210000',
+        #     'objectTypeId': 'CON02',
+        #     'complaintId': 'null',
+        #     'objectId': 'null',
+        #     'batchValue': '',
+        #     'test': '',
+        #     'PROVINCE_ID': '110',
+        #     'CITY_ID': CITYID[self.city],
+        #     'OID': self.scenesid,
+        #     'RELATED_CELL_OID': self.cellid1,
+        #     'NET_TYPE': '4',
+        # }
+        # try:
+        #     AbstractAsk.get_new_cookie()
+        #     respond_msg = oss_ask(modify_url, para_dict, None, AskModify)
+        #     if respond_msg == 'true':
+        #         self.save()
+        # except:
+        #     raise ValueError('input error!')
+
+        self.add_data_information = {
             'timestamp': '1512011210000',
             'objectTypeId': 'CON02',
             'complaintId': 'null',
@@ -266,13 +351,7 @@ class Cell2scenes(models.Model):
             'RELATED_CELL_OID': self.cellid1,
             'NET_TYPE': '4',
         }
-        try:
-            AbstractAsk.get_new_cookie()
-            respond_msg = oss_ask(modify_url, para_dict, None, AskModify)
-            if respond_msg == 'true':
-                self.save()
-        except:
-            raise ValueError('input error!')
+        self.makeToOss()
 
 
 class Enodeb(models.Model):
@@ -394,7 +473,7 @@ class Enodeb(models.Model):
         return self
 
 
-class Rru(models.Model):
+class Rru(BasisOss):
     rruid = models.CharField(max_length=512)
     rruname = models.CharField(max_length=512)
     province = models.CharField(max_length=512)
@@ -430,8 +509,42 @@ class Rru(models.Model):
         return self
 
     def makeDataToOss(self):
-        modify_url = ' http://10.245.0.91:10101/wonop/wonop/config/maintain/detail/config_maintain_property_add_nocheck.action'
-        para_dict = {
+
+        self.modify_url = 'http://10.245.0.91:10101/wonop/wonop/config/maintain/detail/config_maintain_property_add_nocheck.action'
+        # modify_url = 'http://10.245.0.91:10101/wonop/wonop/config/maintain/detail/config_maintain_property_add_nocheck.action'
+        # para_dict = {
+        #     'timestamp': '1512005842000',
+        #     'objectTypeId': 'L00862',
+        #     'complaintId': 'null',
+        #     'objectId': 'null',
+        #     'cell_4g': '',
+        #     'cell_3g': '',
+        #     'cell_2g': '',
+        #     'test': '',
+        #     'RRU_ID': self.rruid,
+        #     'LC_NAME': self.rruname,
+        #     'PROVINCE_ID': '110',
+        #     'CITY_ID': CITYID[self.city],
+        #     'DISTRICT_ID': DISTRICT_ID[self.district],
+        #     'LONGITUDE': self.lon,
+        #     'LATITUDE': self.lat,
+        #     'RELATED_BBU_ID': self.bbuid,
+        #     'RELATED_CELL': self.cellid1,
+        #     'PHY_ID': self.physicalstationid,
+        #     'RRU_MODEL': RRU_MODELlist[self.rrutypes],
+        #     'RRU_PORT': self.rruport,
+        #     'TX_RX_MODE': TX_RX_MODElist[self.txrxtypes],
+        #
+        # }
+        # try:
+        #     AbstractAsk.get_new_cookie()
+        #     respond_msg = oss_ask(modify_url, para_dict, None, AskModify)
+        #     if respond_msg == 'true':
+        #         self.save()
+        # except:
+        #     raise ValueError('input error!')
+
+        self.add_data_information = {
             'timestamp': '1512005842000',
             'objectTypeId': 'L00862',
             'complaintId': 'null',
@@ -455,13 +568,7 @@ class Rru(models.Model):
             'TX_RX_MODE': TX_RX_MODElist[self.txrxtypes],
 
         }
-        try:
-            AbstractAsk.get_new_cookie()
-            respond_msg = oss_ask(modify_url, para_dict, None, AskModify)
-            if respond_msg == 'true':
-                self.save()
-        except:
-            raise ValueError('input error!')
+        self.makeToOss()
 
 
 class Bbu(models.Model):
@@ -616,9 +723,6 @@ class Scenes(models.Model):
         return self
 
 
-
-
-
 class Wcdmacell(models.Model):
     cellname = models.CharField(max_length=512)
     lac = models.CharField(max_length=512)
@@ -675,7 +779,7 @@ class Gsmcell(models.Model):
         return self
 
 
-class Ltecell(models.Model):
+class Ltecell(BasisOss):
     cellname = models.CharField(max_length=256)
     cellid1 = models.CharField(max_length=256)
     cellomcname = models.CharField(max_length=256)
@@ -867,9 +971,7 @@ class Ltecell(models.Model):
             raise ValueError('input error!')
 
     def makeDataToOss(self):
-
-        modify_url = 'http://10.245.0.91:10101/wonop/wonop/config/maintain/detail/config_maintain_property_add_nocheckEx.action'
-        para_dict = {
+        self.add_data_information = {
             'timestamp': '1511754782000',
             'objectTypeId': 'L00805',
             'complaintId': 'null',
@@ -953,14 +1055,7 @@ class Ltecell(models.Model):
             'RESERVED9': self.customize9,
             'RESERVED10': self.customize10,
         }
-        try:
-            AbstractAsk.get_new_cookie()
-            respond_msg = oss_ask(modify_url, para_dict, None, AskModify)
-            if respond_msg == 'true':
-                self.save()
-        except:
-            raise ValueError('input error!')
-
+        self.makeToOss()
 
 
 class Cellunion(models.Model):
@@ -997,6 +1092,9 @@ class Cellunion(models.Model):
                 self.scenes = Cell2scenes().init1(scenesargs)
                 return self
 
+    def init2(self,**args):
+        pass
+
     def makeDataToOss(self):
         try:
             self.cell.makeDataToOss()
@@ -1006,6 +1104,7 @@ class Cellunion(models.Model):
             return True
         except:
             return False
+
 
 class Gsmcellindex(models.Model):
     cellname = models.CharField(max_length=512)
