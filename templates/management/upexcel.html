@@ -48,24 +48,23 @@
                 </tr>
                 </thead>
                 <tbody>
-                                {% for cell in cell_list %}
-                                    <tr>
-                                        <td class="text-center"><input type="checkbox" class="checked_pro" name="checkbox1"/>
-                                        </td>
-                                        <td>{{ forloop.counter }}</td>
-                                        <td>{{ cell.cell.city }}</td>
-                                        <td>{{ cell.cell.cellomcname }}</td>
-                                        <td>{{ cell.cell.cellid1 }}</td>
-                                        <td>{{ cell.rru.rruname }}</td>
-                                        <td>{{ cell.rru.rruid }}</td>
-                                        <td>{{ cell.ant.antennaheight }}</td>
-                                        <td>{{ cell.ant.directionangle }}</td>
-                                        <td>{{ cell.rru.physicalstationid }}</td>
-                                        <td>{{ cell.scenes.scenesid }}</td>
-                                        <td>{{ cell.check_is }}</td>
-                                    </tr>
-                                {% endfor %}
-
+                {% for cell in cell_list %}
+                    <tr>
+                        <td class="text-center"><input type="checkbox" class="checked_pro" name="checkbox1"/>
+                        </td>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ cell.cell.city }}</td>
+                        <td>{{ cell.cell.cellomcname }}</td>
+                        <td>{{ cell.cell.cellid1 }}</td>
+                        <td>{{ cell.rru.rruname }}</td>
+                        <td>{{ cell.rru.rruid }}</td>
+                        <td>{{ cell.ant.antennaheight }}</td>
+                        <td>{{ cell.ant.directionangle }}</td>
+                        <td>{{ cell.rru.physicalstationid }}</td>
+                        <td>{{ cell.scenes.scenesid }}</td>
+                        <td>{{ cell.check_is }}</td>
+                    </tr>
+                {% endfor %}
 
 
                 </tbody>
@@ -91,37 +90,33 @@
                 <tbody id="gridImport_body"></tbody>
 
             </table>
-            {#            {% if from_list.errors %}#}
-            {#                <p style="color: red;">#}
-            {#                    Please correct the error{{ from_list.errors|pluralize }} below.#}
-            {#                </p>#}
-            {#            {% endif %}#}
-
 
         </div>
     </div>
 
 
     </div>
-    <div class="modal-footer">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4 col-md-offset-7 col-sm-5 ">
+                <div class="modal-footer">
 
-        <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
-        {% if filtname %}
-            {#            {{ filtname }}#}
-            {% if check_flag %}
-            <a class="btn btn-primary" href=/addcellunion/{{ filtname }} %}">导入数据</a>
-            {% endif %}
-            {% if not check_flag %}
-            <li>数据核查不通过，请修正后重新上传</li>
-            {% endif %}
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                    {% if filtname %}
+                        {#            {{ filtname }}#}
+                        {% if check_flag %}
+                            <a class="btn btn-primary" href=/addcellunion/{{ filtname }} %}">导入数据</a>
+                        {% endif %}
+                        {% if not check_flag %}
+{#                            <li class="alert alert-danger">数据核查不通过，请修正后重新上传</li>#}
+                            <div class="alert alert-danger">数据核查不通过，请修正后重新上传</div>
+                        {% endif %}
 
-        {% endif %}
-
-
-
+                    {% endif %}
+                </div>
+            </div>
+        </div>
     </div>
-
-
     </body>
 
 

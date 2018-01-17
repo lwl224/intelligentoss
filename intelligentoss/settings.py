@@ -35,6 +35,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django_crontab',
     'smart_import',
     # 'south',
 
@@ -82,7 +83,11 @@ DATABASES = {
         'USER': 'root',
         'PASSWORD': '123456',
         # 'HOST': 'mysql',
+        # 'PORT': '3306',
+
         # 'HOST': '10.160.54.209',
+        # 'PORT': '3307',
+
         'HOST': '120.79.0.35',
         'PORT': '3307',
         # 'PORT': '3306',
@@ -128,3 +133,8 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = (
     STATIC_PATH,
 )
+
+
+CRONJOBS = [
+    ('*/1 * * * *', 'appname.cron.test',['print'])
+]
