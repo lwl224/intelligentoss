@@ -134,7 +134,7 @@ STATICFILES_DIRS = (
     STATIC_PATH,
 )
 
-
 CRONJOBS = [
-    ('*/1 * * * *', 'appname.cron.test',['print'])
+    ('*/1 * * * *', 'smart_import.cron.test'),
+    ('30 0 * * *', 'smart_import.cron.initializa')
 ]
